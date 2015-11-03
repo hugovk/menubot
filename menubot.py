@@ -9,6 +9,7 @@ from whatsonthemenu import WhatsOnTheMenu  # pip install whatsonthemenu
 import argparse
 import random
 import os
+import pytumblr  # pip install pytumblr
 import tempfile
 import sys
 import twitter  # pip install twitter
@@ -46,6 +47,10 @@ def load_yaml(filename):
             'access_token', 'access_token_secret',
             'consumer_key', 'consumer_secret'}:
         sys.exit("Twitter credentials missing from YAML: " + filename)
+    if not data.viewkeys() >= {
+            'tumblr_consumer_key', 'tumblr_consumer_secret',
+            'tumblr_oauth_token', 'tumblr_oauth_secret'}:
+        sys.exit("Tumblr credentials missing from YAML: " + filename)
     if not data.viewkeys() >= {
             'nypl_menus_token'}:
         sys.exit("NYPL Menus credentials missing from YAML: " + filename)
@@ -91,6 +96,35 @@ def tweet_it(string, credentials, image=None):
         url = "http://twitter.com/" + \
             result['user']['screen_name'] + "/status/" + result['id_str']
         print("Tweeted:\n" + url)
+        if not args.no_web:
+            webbrowser.open(url, new=2)  # 2 = open in a new tab, if possible
+
+
+def tumblr_it(string, credentials, image, tags, homepage):
+    """ Post to Tumblr """
+    client = pytumblr.TumblrRestClient(
+        credentials['tumblr_consumer_key'],
+        credentials['tumblr_consumer_secret'],
+        credentials['tumblr_oauth_token'],
+        credentials['tumblr_oauth_secret'])
+
+    # Remove None tags
+    tags = [tag for tag in tags if tag is not None]
+
+    if args.test:
+        print("(Test mode, not actually tumblring)")
+    else:
+        result = client.create_photo(
+            "menubot",
+            state="published",
+            tags=tags,
+            data=str(image),
+            caption=str(string),
+            link=homepage)
+        print(result)
+
+        url = "http://menubot.tumblr.com/post/" + str(result['id'])
+        print("Tumblred:\n" + url)
         if not args.no_web:
             webbrowser.open(url, new=2)  # 2 = open in a new tab, if possible
 
@@ -307,8 +341,12 @@ def menu_tweet(menu):
         print("failsafe 2")
         tweet = homepage
 
+    tags = ["menubot", "What's On The Menu?", "NYPL",
+            str(year), location, dish]
+    print(tags)
+
     print(tweet)
-    return tweet, outfile
+    return tweet, outfile, tags, homepage
 
 
 if __name__ == "__main__":
@@ -346,9 +384,10 @@ if __name__ == "__main__":
     # Need a random menu
     menu = get_a_random_menu(api)
 
-    tweet, outfile = menu_tweet(menu)
+    tweet, outfile, tags, homepage = menu_tweet(menu)
 
     tweet_it(tweet, credentials, outfile)
+    tumblr_it(tweet, credentials, outfile, tags, homepage)
 
     # Show rate limit
     # print("Rate limit remaining: ", api.rate_limit_remaining())
