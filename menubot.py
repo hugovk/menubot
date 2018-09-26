@@ -24,6 +24,11 @@ except ImportError:
     from urllib import urlretrieve
 
 
+def print_it(text):
+    """ Windows cmd.exe cannot do Unicode so encode first """
+    print(text.encode('utf-8'))
+
+
 def timestamp():
     """ Print a timestamp and the filename with path """
     import datetime
@@ -40,19 +45,21 @@ def load_yaml(filename):
     access_token_secret: TODO_ENTER_YOURS
     nypl_menus_token: TODO_ENTER_YOURS
     """
-    f = open(filename)
-    data = yaml.safe_load(f)
-    f.close()
-    if not data.viewkeys() >= {
-            'access_token', 'access_token_secret',
-            'consumer_key', 'consumer_secret'}:
+    with open(filename) as f:
+        data = yaml.safe_load(f)
+
+    keys = data.viewkeys() if sys.version_info.major == 2 else data.keys()
+    if not keys >= {
+        'access_token', 'access_token_secret',
+        'consumer_key', 'consumer_secret'
+    }:
         sys.exit("Twitter credentials missing from YAML: " + filename)
-    if not data.viewkeys() >= {
-            'tumblr_consumer_key', 'tumblr_consumer_secret',
-            'tumblr_oauth_token', 'tumblr_oauth_secret'}:
+    if not keys >= {
+        'tumblr_consumer_key', 'tumblr_consumer_secret',
+        'tumblr_oauth_token', 'tumblr_oauth_secret'
+    }:
         sys.exit("Tumblr credentials missing from YAML: " + filename)
-    if not data.viewkeys() >= {
-            'nypl_menus_token'}:
+    if not keys >= {'nypl_menus_token'}:
         sys.exit("NYPL Menus credentials missing from YAML: " + filename)
     return data
 
@@ -72,7 +79,7 @@ def tweet_it(string, credentials, image=None):
         credentials['consumer_secret'])
     t = twitter.Twitter(auth=auth)
 
-    print("TWEETING THIS:\n", string)
+    print_it("TWEETING THIS:\n" + string)
 
     if args.test:
         print("(Test mode, not actually tweeting)")
@@ -136,7 +143,6 @@ def getit(dictionary, key):
         value = value.strip()
     except AttributeError:
         pass
-    print(key, value)
     return value
 
 
@@ -144,7 +150,6 @@ def make_tweet(tweet, link):
     """ Remove extra space, append link """
     tweet = strip_duplicate_whitespace(tweet)
     tweet += " " + link
-    print(len(tweet), tweet)
     return tweet
 
 
@@ -246,7 +251,7 @@ def menu_tweet(menu):
         print(random_dish)
         dish = getit(random_dish, 'name')
         # Can quickly reject some
-        if len(dish) > 140:
+        if len(dish) > 280:
             continue
         price = getit(random_dish, 'price')
         break
@@ -320,7 +325,7 @@ def menu_tweet(menu):
             else:
                 tweet = "{1} ({0})".format(year, location)
 
-        print(tweet)
+        print_it(tweet)
         tweet = make_tweet(tweet, homepage)
         # 24 characters for photo attachments leaves 116 characters
         if len(tweet) <= 116:
@@ -345,8 +350,12 @@ def menu_tweet(menu):
             str(year), location, dish]
     print(tags)
 
-    print(tweet)
+    print_it(tweet)
     return tweet, outfile, tags, homepage
+
+
+def percent_chance(percent):
+    return random.random() < percent / 100.0
 
 
 if __name__ == "__main__":
@@ -361,8 +370,8 @@ if __name__ == "__main__":
         help="YAML file location containing Twitter keys and secrets")
     parser.add_argument(
         '-c', '--chance',
-        type=int, default=4,
-        help="Denominator for the chance of tweeting this time")
+        type=float, default=12.5,
+        help="Percent chance of tweeting this time")
     parser.add_argument(
         '-nw', '--no-web', action='store_true',
         help="Don't open a web browser to show the tweeted tweet")
@@ -373,7 +382,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Do we have a chance of tweeting this time?
-    if random.randrange(args.chance) > 0:
+    if not percent_chance(args.chance):
         sys.exit("No tweet this time")
 
     credentials = load_yaml(args.yaml)
