@@ -18,6 +18,9 @@ import yaml  # pip install pyyaml
 from whatsonthemenu import WhatsOnTheMenu  # pip install whatsonthemenu
 
 
+MAX_TWEET = 280
+
+
 def print_it(text):
     """ Windows cmd.exe cannot do Unicode so encode first """
     print(text.encode("utf-8"))
@@ -254,7 +257,7 @@ def menu_tweet(menu):
         print(random_dish)
         dish = getit(random_dish, "name")
         # Can quickly reject some
-        if len(dish) > 280:
+        if len(dish) > MAX_TWEET:
             continue
         price = getit(random_dish, "price")
         break
@@ -333,8 +336,8 @@ def menu_tweet(menu):
 
         print_it(tweet)
         tweet = make_tweet(tweet, homepage)
-        # 24 characters for photo attachments leaves 116 characters
-        if len(tweet) <= 116:
+        # 24 characters for photo attachments
+        if len(tweet) <= MAX_TWEET - 24:
             # Bingo!
             break
         else:
@@ -348,7 +351,7 @@ def menu_tweet(menu):
         tweet = location
         tweet = make_tweet(tweet, homepage)
 
-    if len(tweet) > 116:
+    if len(tweet) > MAX_TWEET - 24:
         print("failsafe 2")
         tweet = homepage
 
