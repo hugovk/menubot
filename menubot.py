@@ -3,26 +3,19 @@
 """
 Tweet a menu from NYPL's What's On The Menu
 """
-from __future__ import print_function, unicode_literals
-from whatsonthemenu import WhatsOnTheMenu  # pip install whatsonthemenu
-
 # from pprint import pprint
 import argparse
-import random
 import os
-import pytumblr  # pip install pytumblr
-import tempfile
+import random
 import sys
-import twitter  # pip install twitter
+import tempfile
 import webbrowser
-import yaml  # pip install pyyaml
+from urllib.request import urlretrieve
 
-try:
-    # Python 3
-    from urllib.request import urlretrieve
-except ImportError:
-    # Python 2
-    from urllib import urlretrieve
+import pytumblr  # pip install pytumblr
+import twitter  # pip install twitter
+import yaml  # pip install pyyaml
+from whatsonthemenu import WhatsOnTheMenu  # pip install whatsonthemenu
 
 
 def print_it(text):
@@ -285,12 +278,12 @@ def menu_tweet(menu):
                 print("second_roll", second_roll)
 
                 if second_roll < 33:
-                    tweet = "Only {0}{1} for {2} at {3}? Bargain!".format(
+                    tweet = "Only {}{} for {} at {}? Bargain!".format(
                         currency_symbol, price, dish, location
                     )
 
                 elif second_roll < 67:
-                    tweet = "In {0}, {1} for only {2}{3} at {4}".format(
+                    tweet = "In {}, {} for only {}{} at {}".format(
                         year, dish, currency_symbol, price, location
                     )
 
@@ -312,28 +305,28 @@ def menu_tweet(menu):
                     )
 
                 elif second_roll < 60:
-                    tweet = "Why not enjoy some {0} at {1}?".format(dish, location)
+                    tweet = "Why not enjoy some {} at {}?".format(dish, location)
 
                 elif second_roll < 90:
-                    tweet = "Welcome to {0}, may I recommend the {1}?".format(
+                    tweet = "Welcome to {}, may I recommend the {}?".format(
                         location, dish
                     )
 
                 elif second_roll < 95:
-                    tweet = "{0}, {1} ({2})".format(dish, location, year)
+                    tweet = "{}, {} ({})".format(dish, location, year)
 
                 else:
-                    tweet = "{0}, {1}".format(dish, location)
+                    tweet = "{}, {}".format(dish, location)
 
         if not tweet:
             second_roll = random.randint(0, 99)
             print("second_roll", second_roll)
 
             if second_roll < 60:
-                tweet = "Welcome to {0}, would you care for the menu?".format(location)
+                tweet = "Welcome to {}, would you care for the menu?".format(location)
 
             elif second_roll < 85:
-                tweet = "{0} menu for {1}".format(year, location)
+                tweet = "{} menu for {}".format(year, location)
 
             else:
                 tweet = "{1} ({0})".format(year, location)
