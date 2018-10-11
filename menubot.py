@@ -307,9 +307,9 @@ def menu_tweet(menu):
                 print("second_roll", second_roll)
 
                 if second_roll < 30:
-                    tweet = (
-                        "Welcome to {0}! Why not enjoy some {1} at {2}?"
-                    ).format(year, dish, location)
+                    tweet = ("Welcome to {0}! Why not enjoy some {1} at {2}?").format(
+                        year, dish, location
+                    )
 
                 elif second_roll < 60:
                     tweet = "Why not enjoy some {0} at {1}?".format(dish, location)
