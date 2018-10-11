@@ -5,6 +5,7 @@ Tweet a menu from NYPL's What's On The Menu
 """
 from __future__ import print_function, unicode_literals
 from whatsonthemenu import WhatsOnTheMenu  # pip install whatsonthemenu
+
 # from pprint import pprint
 import argparse
 import random
@@ -26,14 +27,14 @@ except ImportError:
 
 def print_it(text):
     """ Windows cmd.exe cannot do Unicode so encode first """
-    print(text.encode('utf-8'))
+    print(text.encode("utf-8"))
 
 
 def timestamp():
     """ Print a timestamp and the filename with path """
     import datetime
-    print(datetime.datetime.now().strftime("%A, %d. %B %Y %I:%M%p") + " " +
-          __file__)
+
+    print(datetime.datetime.now().strftime("%A, %d. %B %Y %I:%M%p") + " " + __file__)
 
 
 def load_yaml(filename):
@@ -50,16 +51,20 @@ def load_yaml(filename):
 
     keys = data.viewkeys() if sys.version_info.major == 2 else data.keys()
     if not keys >= {
-        'access_token', 'access_token_secret',
-        'consumer_key', 'consumer_secret'
+        "access_token",
+        "access_token_secret",
+        "consumer_key",
+        "consumer_secret",
     }:
         sys.exit("Twitter credentials missing from YAML: " + filename)
     if not keys >= {
-        'tumblr_consumer_key', 'tumblr_consumer_secret',
-        'tumblr_oauth_token', 'tumblr_oauth_secret'
+        "tumblr_consumer_key",
+        "tumblr_consumer_secret",
+        "tumblr_oauth_token",
+        "tumblr_oauth_secret",
     }:
         sys.exit("Tumblr credentials missing from YAML: " + filename)
-    if not keys >= {'nypl_menus_token'}:
+    if not keys >= {"nypl_menus_token"}:
         sys.exit("NYPL Menus credentials missing from YAML: " + filename)
     return data
 
@@ -73,10 +78,11 @@ def tweet_it(string, credentials, image=None):
     # https://dev.twitter.com/apps/new
     # Store credentials in YAML file
     auth = twitter.OAuth(
-        credentials['access_token'],
-        credentials['access_token_secret'],
-        credentials['consumer_key'],
-        credentials['consumer_secret'])
+        credentials["access_token"],
+        credentials["access_token_secret"],
+        credentials["consumer_key"],
+        credentials["consumer_secret"],
+    )
     t = twitter.Twitter(auth=auth)
 
     print_it("TWEETING THIS:\n" + string)
@@ -92,16 +98,19 @@ def tweet_it(string, credentials, image=None):
             # First just read images from the web or from files the regular way
             with open(image, "rb") as imagefile:
                 imagedata = imagefile.read()
-            t_up = twitter.Twitter(domain='upload.twitter.com', auth=auth)
+            t_up = twitter.Twitter(domain="upload.twitter.com", auth=auth)
             id_img = t_up.media.upload(media=imagedata)["media_id_string"]
         else:
             id_img = None  # Does t.statuses.update work with this?
 
-        result = t.statuses.update(
-            status=string, media_ids=id_img)
+        result = t.statuses.update(status=string, media_ids=id_img)
 
-        url = "http://twitter.com/" + \
-            result['user']['screen_name'] + "/status/" + result['id_str']
+        url = (
+            "http://twitter.com/"
+            + result["user"]["screen_name"]
+            + "/status/"
+            + result["id_str"]
+        )
         print("Tweeted:\n" + url)
         if not args.no_web:
             webbrowser.open(url, new=2)  # 2 = open in a new tab, if possible
@@ -110,10 +119,11 @@ def tweet_it(string, credentials, image=None):
 def tumblr_it(string, credentials, image, tags, homepage):
     """ Post to Tumblr """
     client = pytumblr.TumblrRestClient(
-        credentials['tumblr_consumer_key'],
-        credentials['tumblr_consumer_secret'],
-        credentials['tumblr_oauth_token'],
-        credentials['tumblr_oauth_secret'])
+        credentials["tumblr_consumer_key"],
+        credentials["tumblr_consumer_secret"],
+        credentials["tumblr_oauth_token"],
+        credentials["tumblr_oauth_secret"],
+    )
 
     # Remove None tags
     tags = [tag for tag in tags if tag is not None]
@@ -127,10 +137,11 @@ def tumblr_it(string, credentials, image, tags, homepage):
             tags=tags,
             data=str(image),
             caption=str(string),
-            link=homepage)
+            link=homepage,
+        )
         print(result)
 
-        url = "http://menubot.tumblr.com/post/" + str(result['id'])
+        url = "http://menubot.tumblr.com/post/" + str(result["id"])
         print("Tumblred:\n" + url)
         if not args.no_web:
             webbrowser.open(url, new=2)  # 2 = open in a new tab, if possible
@@ -190,26 +201,25 @@ def get_a_random_menu(api):
     min_year = random.randint(1851, 2007)
     max_year = random.randint(min_year + 1, min_year + 11)
     sort_by = random.choice(["date", "name", "dish_count"])
-#     status: "?status=under_review" || "?status=complete" ||
-#             "?status=to_transcribe"
+    #     status: "?status=under_review" || "?status=complete" ||
+    #             "?status=to_transcribe"
     print(min_year, max_year, sort_by)
 
-    menus = api.get_menus(min_year=min_year, max_year=max_year,
-                          sort_by=sort_by)
+    menus = api.get_menus(min_year=min_year, max_year=max_year, sort_by=sort_by)
     # Pick the first menu
-    menu = menus['menus'][0]
+    menu = menus["menus"][0]
     # pprint(menu)
     return menu
 
 
 def menu_tweet(menu):
     """Main thing to make a tweet from this menu"""
-    menu_id = menu['id']
+    menu_id = menu["id"]
     print(menu_id)
 
     # TESTING
-#     menu_id = 29388
-#     menu = api.get_menus_id(menu_id)
+    #     menu_id = 29388
+    #     menu = api.get_menus_id(menu_id)
     # TESTING
 
     # Get pages from a certain menu
@@ -219,29 +229,29 @@ def menu_tweet(menu):
     homepage = "http://menus.nypl.org/menus/" + str(menu_id)
     print(homepage)
 
-    location = getit(menu, 'location')
+    location = getit(menu, "location")
     # place = getit(menu, 'place')
-    year = getit(menu, 'year')
+    year = getit(menu, "year")
 
     # For now, just get a random page
     # TODO if <= 4 pages, get all
     # TODO if > 4 pages, get 4 random ones
-    number_of_pages = len(pages['pages'])
+    number_of_pages = len(pages["pages"])
     print("number_of_pages", number_of_pages)
 
     random_page_index = random.randrange(0, number_of_pages)
     print("random_page_index", random_page_index)
 
-    random_page = pages['pages'][random_page_index]
+    random_page = pages["pages"][random_page_index]
 
-    img_url = random_page['large_src_jp2']
+    img_url = random_page["large_src_jp2"]
     print("img_url", img_url)
 
     # Download it to temp
     outfile = download_file_to_tmp(img_url, menu_id, random_page_index)
 
     # Find a dish from this page
-    dishes = random_page['dishes']
+    dishes = random_page["dishes"]
     random.shuffle(dishes)
     dish = None
     price = None
@@ -249,15 +259,15 @@ def menu_tweet(menu):
     while dishes:
         random_dish = dishes.pop()
         print(random_dish)
-        dish = getit(random_dish, 'name')
+        dish = getit(random_dish, "name")
         # Can quickly reject some
         if len(dish) > 280:
             continue
-        price = getit(random_dish, 'price')
+        price = getit(random_dish, "price")
         break
 
-    currency_symbol = menu['currency_symbol']
-    currency = menu['currency']
+    currency_symbol = menu["currency_symbol"]
+    currency = menu["currency"]
     print("currency", currency_symbol, currency)
 
     # Make a tweet
@@ -276,15 +286,18 @@ def menu_tweet(menu):
 
                 if second_roll < 33:
                     tweet = "Only {0}{1} for {2} at {3}? Bargain!".format(
-                        currency_symbol, price, dish, location)
+                        currency_symbol, price, dish, location
+                    )
 
                 elif second_roll < 67:
                     tweet = "In {0}, {1} for only {2}{3} at {4}".format(
-                        year, dish, currency_symbol, price, location)
+                        year, dish, currency_symbol, price, location
+                    )
 
                 else:
                     tweet = "{1}, {2}{3}, {4} ({0})".format(
-                        year, dish, currency_symbol, price, location)
+                        year, dish, currency_symbol, price, location
+                    )
 
         if not tweet and chance < 80:
 
@@ -294,16 +307,17 @@ def menu_tweet(menu):
                 print("second_roll", second_roll)
 
                 if second_roll < 30:
-                    tweet = ("Welcome to {0}! Why not enjoy some {1} "
-                             "at {2}?"). format(year, dish, location)
+                    tweet = (
+                        "Welcome to {0}! Why not enjoy some {1} at {2}?"
+                    ).format(year, dish, location)
 
                 elif second_roll < 60:
-                    tweet = "Why not enjoy some {0} at {1}?".format(
-                        dish, location)
+                    tweet = "Why not enjoy some {0} at {1}?".format(dish, location)
 
                 elif second_roll < 90:
                     tweet = "Welcome to {0}, may I recommend the {1}?".format(
-                        location, dish)
+                        location, dish
+                    )
 
                 elif second_roll < 95:
                     tweet = "{0}, {1} ({2})".format(dish, location, year)
@@ -316,8 +330,7 @@ def menu_tweet(menu):
             print("second_roll", second_roll)
 
             if second_roll < 60:
-                tweet = "Welcome to {0}, would you care for the menu?".format(
-                    location)
+                tweet = "Welcome to {0}, would you care for the menu?".format(location)
 
             elif second_roll < 85:
                 tweet = "{0} menu for {1}".format(year, location)
@@ -346,8 +359,7 @@ def menu_tweet(menu):
         print("failsafe 2")
         tweet = homepage
 
-    tags = ["menubot", "What's On The Menu?", "NYPL",
-            str(year), location, dish]
+    tags = ["menubot", "What's On The Menu?", "NYPL", str(year), location, dish]
     print(tags)
 
     print_it(tweet)
@@ -363,22 +375,34 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
         description="Tweet a menu from NYPL's What's On The Menu",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
     parser.add_argument(
-        '-y', '--yaml',
-        default='/Users/hugo/Dropbox/bin/data/menubot.yaml',
-        help="YAML file location containing Twitter keys and secrets")
+        "-y",
+        "--yaml",
+        default="/Users/hugo/Dropbox/bin/data/menubot.yaml",
+        help="YAML file location containing Twitter keys and secrets",
+    )
     parser.add_argument(
-        '-c', '--chance',
-        type=float, default=12.5,
-        help="Percent chance of tweeting this time")
+        "-c",
+        "--chance",
+        type=float,
+        default=12.5,
+        help="Percent chance of tweeting this time",
+    )
     parser.add_argument(
-        '-nw', '--no-web', action='store_true',
-        help="Don't open a web browser to show the tweeted tweet")
+        "-nw",
+        "--no-web",
+        action="store_true",
+        help="Don't open a web browser to show the tweeted tweet",
+    )
     parser.add_argument(
-        '-x', '--test', action='store_true',
+        "-x",
+        "--test",
+        action="store_true",
         help="Test mode: go through the motions but don't tweet anything"
-              "or download any images")
+        "or download any images",
+    )
     args = parser.parse_args()
 
     # Do we have a chance of tweeting this time?
@@ -388,7 +412,7 @@ if __name__ == "__main__":
     credentials = load_yaml(args.yaml)
 
     # Ask NYPL for a token: https://github.com/NYPL/menus-api#tokens
-    api = WhatsOnTheMenu(credentials['nypl_menus_token'])
+    api = WhatsOnTheMenu(credentials["nypl_menus_token"])
 
     # Need a random menu
     menu = get_a_random_menu(api)
