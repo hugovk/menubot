@@ -281,19 +281,19 @@ def menu_tweet(menu):
                 print("second_roll", second_roll)
 
                 if second_roll < 33:
-                    tweet = "Only {}{} for {} at {}? Bargain!".format(
-                        currency_symbol, price, dish, location
+                    tweet = (
+                        f"Only {currency_symbol}{price} for {dish} at {location}?"
+                        f" Bargain!"
                     )
 
                 elif second_roll < 67:
-                    tweet = "In {}, {} for only {}{} at {}".format(
-                        year, dish, currency_symbol, price, location
+                    tweet = (
+                        f"In {year}, {dish} for only {currency_symbol}{price} at "
+                        f"{location}"
                     )
 
                 else:
-                    tweet = "{1}, {2}{3}, {4} ({0})".format(
-                        year, dish, currency_symbol, price, location
-                    )
+                    tweet = f"{dish}, {currency_symbol}{price}, {location} ({year})"
 
         if not tweet and chance < 80:
 
@@ -303,17 +303,15 @@ def menu_tweet(menu):
                 print("second_roll", second_roll)
 
                 if second_roll < 30:
-                    tweet = ("Welcome to {0}! Why not enjoy some {1} at {2}?").format(
-                        year, dish, location
+                    tweet = (
+                        f"Welcome to {year}! Why not enjoy some {dish} at {location}?"
                     )
 
                 elif second_roll < 60:
                     tweet = f"Why not enjoy some {dish} at {location}?"
 
                 elif second_roll < 90:
-                    tweet = "Welcome to {}, may I recommend the {}?".format(
-                        location, dish
-                    )
+                    tweet = f"Welcome to {location}, may I recommend the {dish}?"
 
                 elif second_roll < 95:
                     tweet = f"{dish}, {location} ({year})"
