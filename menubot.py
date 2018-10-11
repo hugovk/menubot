@@ -414,5 +414,8 @@ if __name__ == "__main__":
     # Show rate limit
     # print("Rate limit remaining: ", api.rate_limit_remaining())
 
+    # Delete the image file
+    os.remove(outfile)
+
 
 # End of file
