@@ -305,7 +305,7 @@ def menu_tweet(menu):
                     )
 
                 elif second_roll < 60:
-                    tweet = "Why not enjoy some {} at {}?".format(dish, location)
+                    tweet = f"Why not enjoy some {dish} at {location}?"
 
                 elif second_roll < 90:
                     tweet = "Welcome to {}, may I recommend the {}?".format(
@@ -313,23 +313,23 @@ def menu_tweet(menu):
                     )
 
                 elif second_roll < 95:
-                    tweet = "{}, {} ({})".format(dish, location, year)
+                    tweet = f"{dish}, {location} ({year})"
 
                 else:
-                    tweet = "{}, {}".format(dish, location)
+                    tweet = f"{dish}, {location}"
 
         if not tweet:
             second_roll = random.randint(0, 99)
             print("second_roll", second_roll)
 
             if second_roll < 60:
-                tweet = "Welcome to {}, would you care for the menu?".format(location)
+                tweet = f"Welcome to {location}, would you care for the menu?"
 
             elif second_roll < 85:
-                tweet = "{} menu for {}".format(year, location)
+                tweet = f"{year} menu for {location}"
 
             else:
-                tweet = "{1} ({0})".format(year, location)
+                tweet = f"{location} ({year})"
 
         print_it(tweet)
         tweet = make_tweet(tweet, homepage)
