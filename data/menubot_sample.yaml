@@ -1,0 +1,18 @@
+
+# Twitter
+
+consumer_key: TODO
+consumer_secret: TODO
+access_token: TODO
+access_token_secret: TODO
+
+# Tumblr
+
+tumblr_consumer_key: TODO
+tumblr_consumer_secret: TODO
+tumblr_oauth_token: TODO
+tumblr_oauth_secret: TODO
+
+# NYPL Menus
+
+nypl_menus_token: TODO
