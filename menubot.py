@@ -21,11 +21,6 @@ from whatsonthemenu import WhatsOnTheMenu  # pip install whatsonthemenu
 MAX_TWEET = 280
 
 
-def print_it(text):
-    """ Windows cmd.exe cannot do Unicode so encode first """
-    print(text.encode("utf-8"))
-
-
 def timestamp():
     """ Print a timestamp and the filename with path """
     import datetime
@@ -81,7 +76,7 @@ def tweet_it(string, credentials, image=None):
     )
     t = twitter.Twitter(auth=auth)
 
-    print_it("TWEETING THIS:\n" + string)
+    print("TWEETING THIS:\n" + string)
 
     if args.test:
         print("(Test mode, not actually tweeting)")
@@ -332,7 +327,7 @@ def menu_tweet(menu):
             else:
                 tweet = f"{location} ({year})"
 
-        print_it(tweet)
+        print(tweet)
         tweet = make_tweet(tweet, homepage)
         # 24 characters for photo attachments
         if len(tweet) <= MAX_TWEET - 24:
@@ -356,7 +351,7 @@ def menu_tweet(menu):
     tags = ["menubot", "What's On The Menu?", "NYPL", str(year), location, dish]
     print(tags)
 
-    print_it(tweet)
+    print(tweet)
     return tweet, outfile, tags, homepage
 
 
