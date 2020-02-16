@@ -408,8 +408,8 @@ if __name__ == "__main__":
 
     tweet, outfile, tags, homepage = menu_tweet(menu)
 
-    tweet_it(tweet, credentials, outfile)
     tumblr_it(tweet, credentials, outfile, tags, homepage)
+    tweet_it(tweet, credentials, outfile)
 
     # Show rate limit
     # print("Rate limit remaining: ", api.rate_limit_remaining())
