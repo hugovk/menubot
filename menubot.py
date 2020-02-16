@@ -389,7 +389,7 @@ if __name__ == "__main__":
         "-x",
         "--test",
         action="store_true",
-        help="Test mode: go through the motions but don't tweet anything"
+        help="Test mode: go through the motions but don't tweet anything "
         "or download any images",
     )
     args = parser.parse_args()
