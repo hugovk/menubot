@@ -409,9 +409,9 @@ if __name__ == "__main__":
     tweet, outfile, tags, homepage = menu_tweet(menu)
 
     tumblr_it(tweet, credentials, outfile, tags, homepage)
-    try:
-        tweet_it(tweet, credentials, outfile)
-    except twitter.api.TwitterHTTPError as e:
+    # try:
+    #     tweet_it(tweet, credentials, outfile)
+    # except twitter.api.TwitterHTTPError as e:
         # twitter.api.TwitterHTTPError: Twitter sent status 403 for URL:
         # 1.1/media/upload.json using parameters: (oauth_consumer_key=...&oauth_nonce=..
         # .&oauth_signature_method=HMAC-SHA1&oauth_timestamp=...&oauth_token=...&oauth_v
@@ -419,7 +419,7 @@ if __name__ == "__main__":
         # details: {'errors': [{'code': 326, 'message': 'To protect our users from spam
         # and other malicious activity, this account is temporarily locked. Please log
         # in to https://twitter.com to unlock your account.'}]}
-        print(e)
+    #     print(e)
 
     # Show rate limit
     # print("Rate limit remaining: ", api.rate_limit_remaining())
